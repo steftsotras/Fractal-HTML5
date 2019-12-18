@@ -1,0 +1,172 @@
+<html>
+
+<head>
+
+	<title>Fractal</title>
+
+	<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	
+	
+	<meta charset="UTF-8">
+	<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+	<script language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+  
+	
+	<link rel="stylesheet" type="text/css" href="_assets/css/main.css" />
+	
+	
+
+</head>
+
+<body>
+	
+	<header>
+		<h1>Fractal Examples</h1>
+		
+		<p id="label">Μηχανική Γνώσης και Συστήματα Γνώσης</p>
+	</header>
+	
+	<br>
+	
+	<div>
+	
+		<!--<table>
+		
+			<tr>
+				<td><img src="_assets/images/ftree.png" alt="" id="tree"></td>
+				<td>Griffin</td>
+			</tr>
+			<tr>
+				<td>Lois</td>
+				<td>Griffin</td>
+			</tr>
+		
+		</table> -->
+		
+		<div id="canv"></div>
+		
+		<button id="change">change fractal</button>
+	
+		<div>
+	
+	</div>
+
+
+	<footer>Created by icsd13189 on 11/2019</footer>
+</body>
+
+</html>
+
+
+<script>
+
+$(document).ready(function() {
+
+
+
+var s =0;
+
+
+	
+let sketch = function(p) {
+	var angle = 0;
+	var slider;
+	var canvas;
+	var leng = 400;
+	var w,h;
+	
+	
+	p.setup = function() {
+		
+		//Screen adaptive
+		if(p.displayWidth>700){
+			w=700;
+		} else{
+			w= p.displayWidth-50;
+		}
+		if(p.displayHeight>550){
+			h=550;
+		} else{
+			h= p.displayHeight/2;
+		}
+		
+		canvas = p.createCanvas(w,h);
+		canvas.parent('canv');
+	};
+
+	p.draw = function() {
+		
+		p.background(51);
+		
+		if(s==0){
+			angle = p.map(p.mouseX, 0, p.width, 0.1, p.TWO_PI);
+			p.stroke(255);
+			p.translate(p.width/2, p.height);
+			p.branch(170);
+		}
+		
+		if(s==1){
+			//console.log(p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
+			p.divide(p.width / 2 - leng / 2, p.height / 2 + leng * p.sqrt(3) / 4, leng, 1, p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
+		}
+	};
+
+	
+	//TREES
+	p.branch = function(len) {
+		p.line(0, 0, 0, -len);
+		p.translate(0, -len);
+		if (len > 4) {
+			p.push();
+			p.rotate(angle);
+			p.branch(len * 0.67);
+			p.pop();
+			p.push();
+			p.rotate(-angle);
+			p.branch(len * 0.67);
+			p.pop();
+		}
+	};
+	
+	//SIERPINSKI
+	p.divide = function(x, y, l, lvl, max) {
+		if (lvl == max) {
+			p.tri(x, y, l);
+		} else {
+			p.divide(x, y, l / 2, lvl + 1, max);
+			p.divide(x + l / 2, y, l / 2, lvl + 1, max);
+			p.divide(x + l / 4, y - l * p.sqrt(3) / 4, l / 2, lvl + 1, max);
+		}
+	};
+	
+	p.tri = function(x, y, l) {
+		p.triangle(x, y, x + l / 2, y - l * p.sqrt(3) / 2, x + l, y);
+	}
+	
+};
+let myp5 = new p5(sketch);
+	
+
+$("#change").click(function() {
+
+	if(s == 0){
+		s=1;
+	}else{
+		s=0;
+	}
+	
+});
+
+
+
+
+
+
+
+
+
+
+});
+
+</script>
