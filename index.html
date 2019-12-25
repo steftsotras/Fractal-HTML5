@@ -30,19 +30,6 @@
 	<br>
 	
 	<div>
-	
-		<!--<table>
-		
-			<tr>
-				<td><img src="_assets/images/ftree.png" alt="" id="tree"></td>
-				<td>Griffin</td>
-			</tr>
-			<tr>
-				<td>Lois</td>
-				<td>Griffin</td>
-			</tr>
-		
-		</table> -->
 		
 		<div id="canv"></div>
 		
@@ -53,7 +40,7 @@
 	</div>
 
 
-	<div id="footer">Created by icsd13189 on 11/2019</div>
+	<footer>Created by icsd13189 on 11/2019</footer>
 </body>
 
 </html>
@@ -63,8 +50,12 @@
 
 $(document).ready(function() {
 
+
+
 var s =2;
 
+
+	
 let sketch = function(p) {
 	var angle = 0;
 	var slider;
@@ -72,20 +63,24 @@ let sketch = function(p) {
 	var leng = 400;
 	var w,h;
 	
+	let sandpiles;
 	
 	p.setup = function() {
-		
+			
 		//Screen adaptive
 		if(p.displayWidth>700){
 			w=700;
 		} else{
-			w= p.displayWidth-50;
+			w= p.displayWidth-10;
 		}
 		if(p.displayHeight>550){
 			h=550;
 		} else{
-			h= p.displayHeight/2;
+			h= p.displayHeight;
 		}
+		
+		sandpiles = Array(w).fill().map(() => Array(h).fill(0));
+		sandpiles[w/2][h/2] = 10000;
 		
 		canvas = p.createCanvas(w,h);
 		canvas.parent('canv');
@@ -103,28 +98,108 @@ let sketch = function(p) {
 		}
 		
 		if(s==1){
-			p.fill(51);
 			//console.log(p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 			p.divide(p.width / 2 - leng / 2, p.height / 2 + leng * p.sqrt(3) / 4, leng, 1, p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 		}
+		
+		
 		if(s==2){
-			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 5,12));
+			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 7,12),p.map(p.mouseY, 0, p.height, 6,16));
+		}
+		
+		//not
+		if(s==-10){
+		    p.renderSand();	
+			for(var k=0;k<50;k++){
+				p.topple();
+			}
 		}
 	};
 	
 	//CIRCLE
-	p.circle = function(x,y,d,lvl) {
+	p.circle = function(x,y,d,lvlx,lvly) {
 		p.stroke(255);
 		p.noFill();
 		p.ellipse(x,y,d,d);
 		
-		if(d > lvl){
-			p.circle(x+d/2,y,d/2,lvl);
-			p.circle(x-d/2,y,d/2,lvl);
-			p.circle(x,y+d/2,d/2,lvl);
+		if(d > lvlx){
+			console.log("d: "+d);
+			console.log("x: "+lvlx);
+			console.log("y: "+lvly);
+			
+			p.circle(x+d/2,y,d/2,lvlx,lvly);
+			p.circle(x-d/2,y,d/2,lvlx,lvly);
+			
+			if(d > lvly && lvly > 11){
+				p.circle(x,y+d/2,d/2,lvlx,lvly);
+			}
+			if(d > lvly && lvly < 7){
+				p.circle(x,y-d/2,d/2,lvlx,lvly);
+			}
 		}
 	
 	}
+	
+	//SANDPILES
+    p.topple = function(){
+    
+      let nextpiles = Array(w).fill().map(() => Array(h).fill(0));       
+      for(var i=0;i<w;i++){
+          for(var j=0;j<h;j++){
+            var num = sandpiles[i][j];
+            if(num < 4){
+              nextpiles[i][j] = sandpiles[i][j];
+            }
+            if(num >= 4){
+              nextpiles[i][j] += (num - 4);
+			  if(i+1<w)
+				nextpiles[i+1][j]++;
+              if(i-1>=0)
+				nextpiles[i-1][j]++;
+              if(j+1<h)
+				nextpiles[i][j+1]++;
+              if(j-1>=0)
+				nextpiles[i][j-1]++;
+            }
+          }
+      }
+	  let tmp = sandpiles;
+      sandpiles = nextpiles;
+	  nextpiles = tmp;
+      
+    }
+  
+	p.renderSand = function() {
+		p.loadPixels();
+        for(var i=0;i<w;i++){
+          for(var j=0;j<h;j++){
+            
+            var num = sandpiles[i][j];
+            var index = (i+j*w)*4;
+            var R=255;G=0;B=0;A=255;
+            
+            if(num == 0){
+              R=255;G=255;B=0;A=255;
+            } else if(num == 1){
+              //col = p.color(255,0,255);
+              R=0;G=185;B=63;A=255;
+            }else if(num == 2){
+              //col = p.color(0,255,255);
+              R=0;G=104;B=255;A=255;
+            }else if(num == 3){
+              //col = p.color(255,255,255);
+              R=122;G=0;B=229;A=255;
+            }
+            
+            p.pixels[index] = R;
+            p.pixels[index+1] = G;
+            p.pixels[index+2] = B;
+            p.pixels[index+3] = A;
+          }
+        }
+        p.updatePixels();
+	}
+	
 	
 	//TREES
 	p.branch = function(len) {
@@ -154,7 +229,6 @@ let sketch = function(p) {
 	};
 	
 	p.tri = function(x, y, l) {
-		p.fill(51);
 		p.triangle(x, y, x + l / 2, y - l * p.sqrt(3) / 2, x + l, y);
 	}
 	
