@@ -53,7 +53,7 @@
 	</div>
 
 
-	<footer>Created by icsd13189 on 11/2019</footer>
+	<div id="footer">Created by icsd13189 on 11/2019</div>
 </body>
 
 </html>
@@ -63,12 +63,8 @@
 
 $(document).ready(function() {
 
+var s =2;
 
-
-var s =0;
-
-
-	
 let sketch = function(p) {
 	var angle = 0;
 	var slider;
@@ -107,11 +103,28 @@ let sketch = function(p) {
 		}
 		
 		if(s==1){
+			p.fill(51);
 			//console.log(p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 			p.divide(p.width / 2 - leng / 2, p.height / 2 + leng * p.sqrt(3) / 4, leng, 1, p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 		}
+		if(s==2){
+			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 5,12));
+		}
 	};
-
+	
+	//CIRCLE
+	p.circle = function(x,y,d,lvl) {
+		p.stroke(255);
+		p.noFill();
+		p.ellipse(x,y,d,d);
+		
+		if(d > lvl){
+			p.circle(x+d/2,y,d/2,lvl);
+			p.circle(x-d/2,y,d/2,lvl);
+			p.circle(x,y+d/2,d/2,lvl);
+		}
+	
+	}
 	
 	//TREES
 	p.branch = function(len) {
@@ -141,6 +154,7 @@ let sketch = function(p) {
 	};
 	
 	p.tri = function(x, y, l) {
+		p.fill(51);
 		p.triangle(x, y, x + l / 2, y - l * p.sqrt(3) / 2, x + l, y);
 	}
 	
