@@ -54,7 +54,9 @@ $(document).ready(function() {
 
 var s =2;
 
-
+PointObj = function(){
+		var x,y;
+}
 	
 let sketch = function(p) {
 	var angle = 0;
@@ -62,6 +64,11 @@ let sketch = function(p) {
 	var canvas;
 	var leng = 400;
 	var w,h;
+	
+	var maxdraw = 17;
+	var count = 0;
+	var P = new PointObj();
+	var Q = new PointObj();
 	
 	let sandpiles;
 	
@@ -89,7 +96,9 @@ let sketch = function(p) {
 	p.draw = function() {
 		
 		p.background(51);
+		p.frameRate(20);
 		
+		//TREES
 		if(s==0){
 			angle = p.map(p.mouseX, 0, p.width, 0.1, p.TWO_PI);
 			p.stroke(255);
@@ -97,14 +106,34 @@ let sketch = function(p) {
 			p.branch(170);
 		}
 		
-		if(s==1){
+		//SIERPINSKI
+		else if(s==1){
 			//console.log(p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 			p.divide(p.width / 2 - leng / 2, p.height / 2 + leng * p.sqrt(3) / 4, leng, 1, p.floor(p.map(p.mouseX, 0, p.width, 3, 5)));
 		}
 		
+		//SIERPINSKI CIRCLES
+		else if(s==2){
+			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 40,120),p.map(p.mouseY, 0, p.height, 6,16));
+		}
 		
-		if(s==2){
-			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 7,12),p.map(p.mouseY, 0, p.height, 6,16));
+		//DRAGON CURVE
+		else if(s==3){
+			console.log(count);
+			p.smooth();
+			p.noFill();
+			p.frameRate(1);
+
+			P.x = 350; P.y = 150;
+			Q.x = 450; Q.y = 450;
+
+			p.strokeWeight(1);
+			p.stroke(255);
+			p.background(51);
+			p.dragon(P, Q, count);
+			if(count<17){
+				count++;
+			}
 		}
 		
 		//not
@@ -116,13 +145,32 @@ let sketch = function(p) {
 		}
 	};
 	
-	//CIRCLE
+	
+	//DRAGON CURVE
+	p.dragon = function(a, b, n){
+		var c = new PointObj();
+		var xx, yy;
+		xx = b.x - a.x;
+		yy = -(b.y - a.y);
+		c.x = a.x + (xx + yy) / 2;
+		c.y = b.y + (xx + yy) / 2;
+		if (n <= 0) {
+			p.line(a.x, a.y, c.x, c.y);
+			p.line(b.x, b.y, c.x, c.y);
+		} else {
+			p.dragon(a, c, n - 1);
+			p.dragon(b, c, n - 1);
+		}
+	}
+	
+	
+	//SIERPINSKI CIRCLES
 	p.circle = function(x,y,d,lvlx,lvly) {
 		p.stroke(255);
 		p.noFill();
 		p.ellipse(x,y,d,d);
 		
-		if(d > lvlx){
+		if(d > lvlx && lvlx > 3){
 			console.log("d: "+d);
 			console.log("x: "+lvlx);
 			console.log("y: "+lvly);
@@ -130,10 +178,10 @@ let sketch = function(p) {
 			p.circle(x+d/2,y,d/2,lvlx,lvly);
 			p.circle(x-d/2,y,d/2,lvlx,lvly);
 			
-			if(d > lvly && lvly > 11){
+			if(d > lvlx && lvly > 11){
 				p.circle(x,y+d/2,d/2,lvlx,lvly);
 			}
-			if(d > lvly && lvly < 7){
+			if(d > lvlx && lvly < 7){
 				p.circle(x,y-d/2,d/2,lvlx,lvly);
 			}
 		}
@@ -229,6 +277,7 @@ let sketch = function(p) {
 	};
 	
 	p.tri = function(x, y, l) {
+		p.fill(255);
 		p.triangle(x, y, x + l / 2, y - l * p.sqrt(3) / 2, x + l, y);
 	}
 	
@@ -237,10 +286,9 @@ let myp5 = new p5(sketch);
 	
 
 $("#change").click(function() {
-
-	if(s == 0){
-		s=1;
-	}else{
+	
+	s++;
+	if(s == 4){
 		s=0;
 	}
 	
