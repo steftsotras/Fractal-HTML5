@@ -35,12 +35,10 @@
 		
 		<button id="change">change fractal</button>
 	
-		<div>
-	
 	</div>
 
 
-	<footer>Created by icsd13189 on 11/2019</footer>
+	<div id="footer">Created by icsd13189 on 11/2019</div>
 </body>
 
 </html>
@@ -53,6 +51,7 @@ $(document).ready(function() {
 
 
 var s =2;
+var count = 0;
 
 PointObj = function(){
 		var x,y;
@@ -66,7 +65,6 @@ let sketch = function(p) {
 	var w,h;
 	
 	var maxdraw = 17;
-	var count = 0;
 	var P = new PointObj();
 	var Q = new PointObj();
 	
@@ -81,7 +79,7 @@ let sketch = function(p) {
 			w= p.displayWidth-10;
 		}
 		if(p.displayHeight>550){
-			h=550;
+			h=600;
 		} else{
 			h= p.displayHeight;
 		}
@@ -114,7 +112,7 @@ let sketch = function(p) {
 		
 		//SIERPINSKI CIRCLES
 		else if(s==2){
-			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 40,120),p.map(p.mouseY, 0, p.height, 6,16));
+			p.circle(p.width/2,p.height/2,300,p.map(p.mouseX, 0, p.width, 40,180),p.map(p.mouseY, 0, p.height, 6,16));
 		}
 		
 		//DRAGON CURVE
@@ -170,7 +168,7 @@ let sketch = function(p) {
 		p.noFill();
 		p.ellipse(x,y,d,d);
 		
-		if(d > lvlx && lvlx > 3){
+		if(d > lvlx && lvlx >= 3){
 			console.log("d: "+d);
 			console.log("x: "+lvlx);
 			console.log("y: "+lvly);
@@ -184,6 +182,9 @@ let sketch = function(p) {
 			if(d > lvlx && lvly < 7){
 				p.circle(x,y-d/2,d/2,lvlx,lvly);
 			}
+		}
+		else if(lvlx<3){
+			lvlx=3;
 		}
 	
 	}
@@ -288,6 +289,7 @@ let myp5 = new p5(sketch);
 $("#change").click(function() {
 	
 	s++;
+	count=0;
 	if(s == 4){
 		s=0;
 	}
