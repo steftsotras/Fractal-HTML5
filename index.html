@@ -27,12 +27,15 @@
 		<p id="label">Μηχανική Γνώσης και Συστήματα Γνώσης</p>
 	</header>
 	
-	<br>
-	
 	<div id="canv"></div>
-		
+	
+	<div id="slider"></div>	
 	<div id="btn">
-		<button id="change">change fractal</button>
+		<input id="changeL" type="image" src="_assets/images/arrL.png" />
+		<input id="refresh" type="image" src="_assets/images/ref.png" />
+		<input id="changeR" type="image" src="_assets/images/arrR.png" />
+		
+		<!-- <button id="change">change fractal</button> -->
 	</div>
 
 
@@ -91,6 +94,10 @@ let sketch = function(p) {
 		canvas = p.createCanvas(w,h);
 		canvas.parent('canv');
 		
+		slider = p.createSlider(0.3,3.6,3.0,0.3);
+		slider.parent('slider');
+		slider.hide();
+		
 		//settings for koch
 		p.startKoch();
 	
@@ -100,6 +107,7 @@ let sketch = function(p) {
 		
 		p.background(51);
 		p.frameRate(20);
+		slider.hide();
 		
 		//TREES
 		if(s==0){
@@ -143,11 +151,20 @@ let sketch = function(p) {
 		else if(s==4){
 			
 			if(refresh){
+				
 				segments = [];
 				genCount = 0;
 				p.startKoch();
 				refresh=false;
 			}
+			//angle = p.map(p.mouseX, 0, p.width, p.PI, p.TWO_PI);
+			
+			slider.show();
+			angle = p.PI / slider.value();
+			console.log(slider.value());
+			p.textSize(15);
+			p.fill(255);
+			p.text('angle of curve', 20, 0);
 			
 			p.background(51);
 			p.translate(0, 100);
@@ -170,7 +187,7 @@ let sketch = function(p) {
 			console.log(genCount);
 		}
 		
-		//not
+		//SANDPILES
 		//if(s==-10){
 		//    p.renderSand();	
 		//	for(var k=0;k<50;k++){
@@ -225,7 +242,9 @@ let sketch = function(p) {
 		let a1 = p5.Vector.sub(this.b, v);
 		children[3] = new Segment(a1, this.b);
 
-		v.rotate(-p.PI / 3);
+		//v.rotate(-p.PI / 3);
+		v.rotate(-angle);
+		
 		let c = p5.Vector.add(b1, v);
 
 		// Segment 2
@@ -238,6 +257,7 @@ let sketch = function(p) {
 	  show() {
 		p.stroke(255);
 		p.line(this.a.x, this.a.y, this.b.x, this.b.y);
+		//p.rotate(angle);
 	  }
 	}
 	
@@ -383,14 +403,13 @@ let sketch = function(p) {
 let myp5 = new p5(sketch);
 	
 
-$("#change").click(function() {
+$("#changeR").click(function() {
 	
 	//advance
 	s++;
 	
 	//clear dragon count
 	count=0;
-	
 	//clear koch list
 	refresh=true;
 	
@@ -399,17 +418,39 @@ $("#change").click(function() {
 		s=0;
 	}
 	
+	
+	
+});
+
+$("#changeL").click(function() {
+	
+	//descent
+	s--;
+	
+	//clear dragon count
+	count=0;
+	//clear koch list
+	refresh=true;
+	
+	//go from start
+	if(s == -1){
+		s=4;
+	}
+	
+});
+
+
+$("#refresh").click(function() {
+
+	refresh=true;
+	count=0;
+	
+});
+
+
 });
 
 
 
-
-
-
-
-
-
-
-});
 
 </script>
