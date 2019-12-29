@@ -19,6 +19,10 @@ canvas {
 	
 }
 
+#slider{
+	width:10em;
+	margin: 30px auto 0px auto;
+}
 
 header {
 	display: block;
@@ -56,8 +60,9 @@ td img {
 #btn{
 	
 	padding-top:2em;
-	
+	padding:10px;
 }
+
 
 button{
 	padding: 8px 12px;
